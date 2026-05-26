@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Planning Semaine</title>
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --card: #ffffff;
+      --text: #1c1c1e;
+      --muted: #8e8e93;
+      --border: #e5e5ea;
+
+      --dog-bg: #edf7ed; --dog-accent: #3a7d44; --dog-border: #5cb85c;
+      --sport-bg: #fff5eb; --sport-accent: #d4691e; --sport-border: #ff9500;
+      --pilates-bg: #fce8f3; --pilates-accent: #b5266e; --pilates-border: #e91e8c;
+      --transport-bg: #e8efff; --transport-accent: #2d5be3; --transport-border: #4a7fff;
+      --work-bg: #f4eeff; --work-accent: #6d28d9; --work-border: #9b59f0;
+      --neutral-bg: #f5f5f7; --neutral-accent: #636366; --neutral-border: #c7c7cc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    /* ---- Header ---- */
+    .app-header {
+      background: var(--bg);
+      padding: 24px 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .app-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; }
+
+    .app-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 2px; margin-bottom: 16px; }
+
+    /* ---- Day tabs ---- */
+    .day-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .day-tabs::-webkit-scrollbar { display: none; }
+
+    .day-tab {
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 9px 18px;
+      border-radius: 22px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .day-tab:hover:not(.active) { border-color: #aaa; }
+
+    .day-tab.active { background: var(--text); border-color: var(--text); color: #fff; }
+
+    .day-tab .dn { font-size: 0.88rem; font-weight: 600; }
+
+    .day-tab .dd { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+
+    .day-tab.active .dd { color: rgba(255,255,255,0.55); }
+
+    .day-tab.today:not(.active) { border-color: var(--work-border); }
+
+    .tl-badge {
+      position: absolute;
+      top: -7px; right: -6px;
+      background: #ff9500;
+      color: #fff;
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ---- Day tags ---- */
+    .day-tags {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      padding: 0 20px 16px;
+      background: var(--bg);
+    }
+
+    .dtag {
+      font-size: 0.73rem;
+      font-weight: 500;
+      padding: 4px 11px;
+      border-radius: 12px;
+    }
+
+    .dtag-bureau   { background: var(--transport-bg); color: var(--transport-accent); }
+    .dtag-tl       { background: #fff5eb;             color: #d4691e; }
+    .dtag-sport    { background: var(--sport-bg);     color: var(--sport-accent); }
+    .dtag-pilates  { background: var(--pilates-bg);   color: var(--pilates-accent); }
+    .dtag-repos    { background: var(--neutral-bg);   color: var(--neutral-accent); }
+    .dtag-weekend  { background: var(--dog-bg);       color: var(--dog-accent); }
+    .dtag-chienne  { background: var(--dog-bg);       color: var(--dog-accent); }
+
+    /* ---- Timeline ---- */
+    .timeline { padding: 0 16px; }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 20px 6px 8px;
+    }
+
+    .events { display: flex; flex-direction: column; gap: 8px; }
+
+    /* ---- Event card ---- */
+    .ev {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.12s;
+      border-left: 3.5px solid transparent;
+      position: relative;
+    }
+
+    .ev:hover { transform: translateX(2px); }
+
+    .ev.done { opacity: 0.45; }
+
+    .ev.done .ev-title { text-decoration: line-through; }
+
+    .ev-dog       { background: var(--dog-bg);       border-left-color: var(--dog-border); }
+    .ev-sport     { background: var(--sport-bg);     border-left-color: var(--sport-border); }
+    .ev-pilates   { background: var(--pilates-bg);   border-left-color: var(--pilates-border); }
+    .ev-transport { background: var(--transport-bg); border-left-color: var(--transport-border); }
+    .ev-work      { background: var(--work-bg);      border-left-color: var(--work-border); }
+    .ev-neutral   { background: var(--neutral-bg);   border-left-color: var(--neutral-border); }
+
+    .ev-time {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      min-width: 96px;
+      line-height: 1.7;
+      flex-shrink: 0;
+    }
+
+    .ev-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+
+    .ev-body { flex: 1; min-width: 0; }
+
+    .ev-title { font-size: 0.9rem; font-weight: 600; line-height: 1.35; }
+
+    .ev-sub {
+      font-size: 0.78rem;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .ev-dog .ev-sub       { color: var(--dog-accent); }
+    .ev-sport .ev-sub     { color: var(--sport-accent); }
+    .ev-pilates .ev-sub   { color: var(--pilates-accent); }
+    .ev-transport .ev-sub { color: var(--transport-accent); }
+    .ev-work .ev-sub      { color: var(--work-accent); }
+    .ev-neutral .ev-sub   { color: var(--neutral-accent); }
+
+    .ev-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .ev.done .ev-dot { background: var(--muted); border-color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<div class="app-header">
+  <p class="app-title">Mon Planning</p>
+  <p class="app-subtitle" id="weekLabel"></p>
+  <div class="day-tabs" id="dayTabs"></div>
+</div>
+
+<div class="day-tags" id="dayTags"></div>
+<div class="timeline" id="timeline"></div>
+
+<script>
+const WEEK = [
+  {
+    name: "Lun", full: "Lundi", tl: false,
+    tags: [
+      { label: "Bureau", cls: "dtag-bureau" },
+      { label: "Salle de sport", cls: "dtag-sport" },
+      { label: "Pilates midi", cls: "dtag-pilates" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"l1", time:"05h30 – 06h15", icon:"🐾", title:"Balade chienne", sub:"45 min — elle est calme pour la journée", c:"dog" },
+        { id:"l2", time:"06h15 – 06h45", icon:"🎒", title:"Préparation + sac sport", sub:"Préparer tenue gym la veille pour gagner du temps", c:"neutral" },
+        { id:"l3", time:"06h50 – 07h06", icon:"🚶", title:"À pied → gare Vouvry", sub:"15 min · partir à 06h50", c:"transport" },
+        { id:"l4", time:"07h06 – 08h12", icon:"🚆", title:"R91 direction Brig → Prilly-Malley", sub:"Voie 1 · 1h06 · arrivée 08h12", c:"transport" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"l5", time:"08h12 – 12h00", icon:"💼", title:"Travail", sub:"3h45 de concentration — bloc matin", c:"work" },
+        { id:"l6", time:"12h00 – 12h35", icon:"🏃", title:"Cardio salle", sub:"35 min elliptique / vélo / tapis", c:"sport" },
+        { id:"l7", time:"12h35 – 13h05", icon:"🧘", title:"Pilates (séance du jour)", sub:"Corps déjà chaud → enchaîner directement", c:"pilates" },
+        { id:"l8", time:"13h05 – 13h30", icon:"🚿", title:"Douche + repas express", sub:"Lunch préparé la veille", c:"neutral" },
+        { id:"l9", time:"13h30 – 17h30", icon:"💼", title:"Travail — bloc après-midi", sub:"Réunions + deep work", c:"work" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"l10", time:"17h45 – 18h51", icon:"🚆", title:"R91 retour → Vouvry", sub:"Voie 1 · arrivée 18h51", c:"transport" },
+        { id:"l11", time:"18h55 – 19h10", icon:"🚶", title:"À pied → maison", sub:"15 min", c:"transport" },
+        { id:"l12", time:"19h15 – 20h00", icon:"🐾", title:"Balade chienne soir", sub:"45 min — indispensable après journée seule", c:"dog" },
+        { id:"l13", time:"20h00 – 20h15", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"l14", time:"20h15 – 21h00", icon:"🌙", title:"Dîner + décompression", sub:"Pas d'écrans si possible", c:"neutral" },
+        { id:"l15", time:"21h00",          icon:"📋", title:"Prépa lendemain", sub:"Tenue gym + lunch + sac", c:"neutral" },
+      ]}
+    ]
+  },
+  {
+    name: "Mar", full: "Mardi", tl: false,
+    tags: [
+      { label: "Bureau", cls: "dtag-bureau" },
+      { label: "Salle de sport", cls: "dtag-sport" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"ma1", time:"05h30 – 06h15", icon:"🐾", title:"Balade chienne", sub:"45 min — départ calme pour la journée", c:"dog" },
+        { id:"ma2", time:"06h15 – 06h45", icon:"🎒", title:"Préparation", sub:"Tenue prête la veille — gain de temps", c:"neutral" },
+        { id:"ma3", time:"06h50 – 07h06", icon:"🚶", title:"À pied → gare Vouvry", sub:"15 min · partir à 06h50", c:"transport" },
+        { id:"ma4", time:"07h06 – 08h12", icon:"🚆", title:"R91 → Prilly-Malley", sub:"Voie 1 · 1h06 · arrivée 08h12", c:"transport" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"ma5", time:"08h12 – 12h00", icon:"💼", title:"Travail — bloc matin", sub:"Deep work — emails + projets", c:"work" },
+        { id:"ma6", time:"12h00 – 12h50", icon:"🏃", title:"Cardio salle", sub:"50 min — séance longue, pas de pilates", c:"sport" },
+        { id:"ma7", time:"12h50 – 13h30", icon:"🚿", title:"Douche + repas", sub:"Lunch préparé la veille", c:"neutral" },
+        { id:"ma8", time:"13h30 – 17h30", icon:"💼", title:"Travail — après-midi", sub:"Réunions + deep work", c:"work" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"ma9",  time:"17h45 – 18h51", icon:"🚆", title:"R91 retour → Vouvry", sub:"Voie 1 · arrivée 18h51", c:"transport" },
+        { id:"ma10", time:"18h55 – 19h10", icon:"🚶", title:"À pied → maison", sub:"15 min", c:"transport" },
+        { id:"ma11", time:"19h15 – 20h00", icon:"🐾", title:"Balade chienne soir", sub:"45 min", c:"dog" },
+        { id:"ma12", time:"20h00 – 20h15", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"ma13", time:"20h15 – 21h30", icon:"🌙", title:"Soirée libre", sub:"Temps perso — lecture, série, amis", c:"neutral" },
+      ]}
+    ]
+  },
+  {
+    name: "Mer", full: "Mercredi", tl: true,
+    tags: [
+      { label: "Télétravail", cls: "dtag-tl" },
+      { label: "Pilates midi", cls: "dtag-pilates" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"me1", time:"06h30 – 07h15", icon:"🐾", title:"Balade chienne", sub:"Plus tranquille — pas de train ce matin", c:"dog" },
+        { id:"me2", time:"07h15 – 08h00", icon:"☕", title:"Petit-déjeuner + installation", sub:"Bureau à la maison — préparer la journée", c:"neutral" },
+        { id:"me3", time:"08h00 – 10h00", icon:"💼", title:"Travail — deep work", sub:"Fenêtre de concentration maximale", c:"work" },
+        { id:"me4", time:"10h00 – 10h15", icon:"🚶", title:"Pause active", sub:"Étirements ou mini-promenade", c:"neutral" },
+        { id:"me5", time:"10h15 – 12h00", icon:"💼", title:"Travail — suite matin", sub:"Emails + réunions en ligne", c:"work" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"me6", time:"12h00 – 12h35", icon:"🧘", title:"Pilates (séance du jour)", sub:"À domicile — corps frais le midi", c:"pilates" },
+        { id:"me7", time:"12h35 – 13h15", icon:"🍳", title:"Déjeuner", sub:"Cuisiner — prendre le temps", c:"neutral" },
+        { id:"me8", time:"13h15 – 17h30", icon:"💼", title:"Travail — après-midi", sub:"Réunions + suivi projets", c:"work" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"me9",  time:"17h30 – 18h30", icon:"🐾", title:"Balade chienne longue", sub:"1h — profiter d'être à la maison", c:"dog" },
+        { id:"me10", time:"18h30 – 18h45", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"me11", time:"19h00 – 20h00", icon:"🌿", title:"Temps libre", sub:"Sport léger, lecture, projets perso", c:"neutral" },
+        { id:"me12", time:"20h00 – 21h00", icon:"🌙", title:"Dîner", sub:"Cuisiner ou commander", c:"neutral" },
+      ]}
+    ]
+  },
+  {
+    name: "Jeu", full: "Jeudi", tl: false,
+    tags: [
+      { label: "Bureau", cls: "dtag-bureau" },
+      { label: "Salle de sport", cls: "dtag-sport" },
+      { label: "Pilates midi", cls: "dtag-pilates" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"j1", time:"05h30 – 06h15", icon:"🐾", title:"Balade chienne", sub:"45 min — rituel matinal", c:"dog" },
+        { id:"j2", time:"06h15 – 06h45", icon:"🎒", title:"Préparation + sac sport", sub:"Tenue prête la veille", c:"neutral" },
+        { id:"j3", time:"06h50 – 07h06", icon:"🚶", title:"À pied → gare Vouvry", sub:"15 min · partir à 06h50", c:"transport" },
+        { id:"j4", time:"07h06 – 08h12", icon:"🚆", title:"R91 → Prilly-Malley", sub:"Voie 1 · 1h06 · arrivée 08h12", c:"transport" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"j5", time:"08h12 – 12h00", icon:"💼", title:"Travail — bloc matin", sub:"Réunions de début de semaine + projets", c:"work" },
+        { id:"j6", time:"12h00 – 12h35", icon:"🏃", title:"Cardio salle", sub:"35 min elliptique / vélo / tapis", c:"sport" },
+        { id:"j7", time:"12h35 – 13h05", icon:"🧘", title:"Pilates (séance du jour)", sub:"Corps chaud → enchaîner directement", c:"pilates" },
+        { id:"j8", time:"13h05 – 13h30", icon:"🚿", title:"Douche + repas express", sub:"Lunch préparé la veille", c:"neutral" },
+        { id:"j9", time:"13h30 – 17h30", icon:"💼", title:"Travail — après-midi", sub:"Deep work + clôture de la semaine", c:"work" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"j10", time:"17h45 – 18h51", icon:"🚆", title:"R91 retour → Vouvry", sub:"Voie 1 · arrivée 18h51", c:"transport" },
+        { id:"j11", time:"18h55 – 19h10", icon:"🚶", title:"À pied → maison", sub:"15 min", c:"transport" },
+        { id:"j12", time:"19h15 – 20h00", icon:"🐾", title:"Balade chienne soir", sub:"45 min — après longue journée", c:"dog" },
+        { id:"j13", time:"20h00 – 20h15", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"j14", time:"20h15 – 21h30", icon:"🌙", title:"Dîner + soirée libre", sub:"Décompression avant vendredi TL", c:"neutral" },
+      ]}
+    ]
+  },
+  {
+    name: "Ven", full: "Vendredi", tl: true,
+    tags: [
+      { label: "Télétravail", cls: "dtag-tl" },
+      { label: "Pilates midi", cls: "dtag-pilates" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"v1", time:"06h30 – 07h15", icon:"🐾", title:"Balade chienne", sub:"Plus longue — fin de semaine détente", c:"dog" },
+        { id:"v2", time:"07h15 – 08h00", icon:"☕", title:"Petit-déjeuner + installation", sub:"Bureau à la maison — café tranquille", c:"neutral" },
+        { id:"v3", time:"08h00 – 12h00", icon:"💼", title:"Travail — matin", sub:"Finaliser la semaine + réunions bilan", c:"work" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"v4", time:"12h00 – 12h35", icon:"🧘", title:"Pilates (séance du jour)", sub:"5e séance de la semaine si possible !", c:"pilates" },
+        { id:"v5", time:"12h35 – 13h30", icon:"🍳", title:"Déjeuner long", sub:"Vendredi — mérite une vraie pause", c:"neutral" },
+        { id:"v6", time:"13h30 – 17h00", icon:"💼", title:"Travail — après-midi", sub:"Clôturer, préparer la semaine suivante", c:"work" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"v7",  time:"17h00 – 18h00", icon:"🐾", title:"Balade chienne longue", sub:"1h — fêter le weekend !", c:"dog" },
+        { id:"v8",  time:"18h00 – 18h15", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"v9",  time:"18h30 – 22h00", icon:"🎉", title:"Soirée weekend", sub:"Amis, sortie, dîner ou soirée perso", c:"neutral" },
+      ]}
+    ]
+  },
+  {
+    name: "Sam", full: "Samedi", tl: false,
+    tags: [
+      { label: "Weekend", cls: "dtag-weekend" },
+      { label: "Chienne", cls: "dtag-chienne" },
+      { label: "Sport", cls: "dtag-sport" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"s1", time:"07h30 – 08h30", icon:"🐾", title:"Grande balade chienne", sub:"1h — forêt, montagne ou bords de lac", c:"dog" },
+        { id:"s2", time:"08h30 – 09h30", icon:"☕", title:"Petit-déjeuner du weekend", sub:"Prendre vraiment le temps", c:"neutral" },
+        { id:"s3", time:"09h30 – 10h15", icon:"🧘", title:"Pilates ou yoga doux", sub:"Séance à la maison — récupération active", c:"pilates" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"s4", time:"10h30 – 12h30", icon:"🛍️", title:"Temps libre", sub:"Courses, amis, projets perso", c:"neutral" },
+        { id:"s5", time:"12h30 – 14h00", icon:"🍽️", title:"Déjeuner", sub:"Sortir manger ou cuisiner", c:"neutral" },
+        { id:"s6", time:"14h00 – 17h00", icon:"🏔️", title:"Activité outdoor", sub:"Randonnée, vélo, ski ou détente", c:"sport" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"s7",  time:"17h00 – 17h45", icon:"🐾", title:"Balade chienne soir", sub:"45 min", c:"dog" },
+        { id:"s8",  time:"17h45 – 18h00", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"s9",  time:"18h00 – 23h00", icon:"✨", title:"Soirée libre", sub:"Profiter — aucune obligation demain matin", c:"neutral" },
+      ]}
+    ]
+  },
+  {
+    name: "Dim", full: "Dimanche", tl: false,
+    tags: [
+      { label: "Repos", cls: "dtag-repos" },
+      { label: "Chienne", cls: "dtag-chienne" }
+    ],
+    sections: [
+      { name: "MATIN", events: [
+        { id:"d1", time:"08h00 – 09h00", icon:"🐾", title:"Balade chienne", sub:"Matinée tranquille — rythme doux", c:"dog" },
+        { id:"d2", time:"09h00 – 10h30", icon:"📖", title:"Petit-déjeuner + lecture", sub:"Pas d'écrans le matin — déconnexion", c:"neutral" },
+      ]},
+      { name: "JOURNÉE", events: [
+        { id:"d3", time:"10h30 – 12h30", icon:"🌿", title:"Activité douce", sub:"Yoga, marche, musée, café avec amis...", c:"sport" },
+        { id:"d4", time:"12h30 – 14h00", icon:"🍳", title:"Déjeuner du dimanche", sub:"Cuisiner quelque chose de bon", c:"neutral" },
+        { id:"d5", time:"14h00 – 16h30", icon:"😴", title:"Temps libre", sub:"Sieste, projets perso, zéro obligation", c:"neutral" },
+      ]},
+      { name: "SOIRÉE", events: [
+        { id:"d6", time:"16h30 – 17h30", icon:"🐾", title:"Balade chienne", sub:"1h — avant la semaine", c:"dog" },
+        { id:"d7", time:"17h30 – 17h45", icon:"🍽️", title:"Repas chienne", sub:"Croquettes + eau fraîche", c:"dog" },
+        { id:"d8", time:"18h00 – 19h00", icon:"📋", title:"Préparation semaine", sub:"Tenues, lunchs, planning → semaine sereine", c:"neutral" },
+        { id:"d9", time:"19h30 – 20h30", icon:"🌙", title:"Dîner + coucher tôt", sub:"Lever 05h30 lundi — en forme pour démarrer", c:"neutral" },
+      ]}
+    ]
+  }
+];
+
+// ---- State ----
+let activeIdx = 0;
+const doneKey = d => 'done_' + d;
+
+function getDone(dayIdx) {
+  const today = getMonday();
+  today.setDate(today.getDate() + dayIdx);
+  const key = doneKey(today.toISOString().slice(0,10));
+  try { return new Set(JSON.parse(localStorage.getItem(key) || '[]')); }
+  catch { return new Set(); }
+}
+
+function saveDone(dayIdx, set) {
+  const today = getMonday();
+  today.setDate(today.getDate() + dayIdx);
+  const key = doneKey(today.toISOString().slice(0,10));
+  localStorage.setItem(key, JSON.stringify([...set]));
+}
+
+function toggleDone(dayIdx, evId) {
+  const set = getDone(dayIdx);
+  set.has(evId) ? set.delete(evId) : set.add(evId);
+  saveDone(dayIdx, set);
+  renderTimeline();
+}
+
+// ---- Week helpers ----
+function getMonday() {
+  const d = new Date();
+  const dow = d.getDay();
+  const diff = (dow + 6) % 7;
+  const mon = new Date(d);
+  mon.setDate(d.getDate() - diff);
+  mon.setHours(0,0,0,0);
+  return mon;
+}
+
+function getTodayIdx() {
+  const d = new Date().getDay();
+  return d === 0 ? 6 : d - 1;
+}
+
+const MONTHS_SHORT = ['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+
+// ---- Render week label ----
+function renderWeekLabel() {
+  const mon = getMonday();
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  document.getElementById('weekLabel').textContent =
+    `Semaine du ${mon.getDate()} ${MONTHS_SHORT[mon.getMonth()]} au ${sun.getDate()} ${MONTHS_SHORT[sun.getMonth()]} ${sun.getFullYear()}`;
+}
+
+// ---- Render tabs ----
+function renderTabs() {
+  const mon = getMonday();
+  const todayIdx = getTodayIdx();
+  const container = document.getElementById('dayTabs');
+  container.innerHTML = '';
+
+  WEEK.forEach((day, i) => {
+    const d = new Date(mon); d.setDate(mon.getDate() + i);
+    const btn = document.createElement('button');
+    btn.className = 'day-tab' +
+      (i === activeIdx ? ' active' : '') +
+      (i === todayIdx ? ' today' : '');
+
+    btn.innerHTML = `<span class="dn">${day.name}</span><span class="dd">${d.getDate()}</span>` +
+      (day.tl ? `<span class="tl-badge">TL</span>` : '');
+
+    btn.addEventListener('click', () => { activeIdx = i; render(); });
+    container.appendChild(btn);
+  });
+}
+
+// ---- Render tags ----
+function renderTags() {
+  const day = WEEK[activeIdx];
+  const container = document.getElementById('dayTags');
+  container.innerHTML = day.tags.map(t =>
+    `<span class="dtag ${t.cls}">${t.label}</span>`
+  ).join('');
+}
+
+// ---- Render timeline ----
+function renderTimeline() {
+  const day = WEEK[activeIdx];
+  const done = getDone(activeIdx);
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+
+  day.sections.forEach(sec => {
+    if (!sec.events.length) return;
+
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label';
+    lbl.textContent = sec.name;
+    tl.appendChild(lbl);
+
+    const eventsDiv = document.createElement('div');
+    eventsDiv.className = 'events';
+
+    sec.events.forEach(ev => {
+      const isDone = done.has(ev.id);
+      const card = document.createElement('div');
+      card.className = `ev ev-${ev.c}${isDone ? ' done' : ''}`;
+      card.innerHTML = `
+        <span class="ev-time">${ev.time}</span>
+        <span class="ev-icon">${ev.icon}</span>
+        <div class="ev-body">
+          <div class="ev-title">${ev.title}</div>
+          <div class="ev-sub">${ev.sub}</div>
+        </div>
+        <div class="ev-dot"></div>
+      `;
+      card.addEventListener('click', () => toggleDone(activeIdx, ev.id));
+      eventsDiv.appendChild(card);
+    });
+
+    tl.appendChild(eventsDiv);
+  });
+}
+
+// ---- Init ----
+function render() {
+  renderTabs();
+  renderTags();
+  renderTimeline();
+}
+
+activeIdx = getTodayIdx();
+renderWeekLabel();
+render();
+</script>
+</body>
+</html>
