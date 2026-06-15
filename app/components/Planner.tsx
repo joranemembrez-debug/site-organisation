@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/app/lib/supabase/client";
 import { WEEK, DAY_NAMES, type WeekSettings } from "@/app/data/week";
 import {
   catDot,
@@ -170,6 +172,14 @@ function SettingsModal({
 }) {
   const [draft, setDraft] = useState<WeekSettings>(() => structuredClone(cfg));
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   // Déclenche l'animation d'ouverture après le montage
   useEffect(() => {
@@ -222,6 +232,10 @@ function SettingsModal({
 
         <button className="modal-save" onClick={() => onSave(draft)}>
           Enregistrer
+        </button>
+
+        <button className="modal-signout" onClick={handleSignOut}>
+          Se déconnecter
         </button>
       </div>
     </div>

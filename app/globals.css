@@ -303,3 +303,104 @@ button { font-family: inherit; }
     box-shadow: 0 0 0 1px var(--border);
   }
 }
+
+/* ── Login ── */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.4px; }
+.login-sub { font-size: 0.85rem; color: var(--muted); margin-top: -10px; margin-bottom: 6px; }
+
+.login-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--mid);
+}
+
+.login-input {
+  font-size: 0.9rem;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.login-input:focus { border-color: var(--accent); }
+
+.login-btn {
+  margin-top: 6px;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  background: var(--text);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.login-btn:hover { background: #444; }
+.login-btn:disabled { opacity: 0.5; cursor: default; }
+
+.login-switch {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px;
+}
+.login-switch:hover { color: var(--accent-h); text-decoration: underline; }
+
+.login-error {
+  font-size: 0.78rem;
+  color: #c0392b;
+  background: #fdecea;
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.login-info {
+  font-size: 0.78rem;
+  color: #1e6b3a;
+  background: #e8f6ec;
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+
+/* Déconnexion (dans la modal réglages) */
+.modal-signout {
+  margin-top: 12px;
+  width: 100%;
+  padding: 11px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--mid);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.modal-signout:hover { border-color: #c0392b; color: #c0392b; }
