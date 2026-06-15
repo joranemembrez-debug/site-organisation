@@ -6,20 +6,21 @@
   <title>Mon Planning</title>
   <style>
     :root {
-      --bg:      #f4f1ec;
+      --bg:      #f9f6f2;
       --surface: #ffffff;
-      --text:    #1a1a1a;
-      --mid:     #5c5c5c;
-      --muted:   #ababab;
-      --border:  #ebebeb;
-      --accent:  #1a1a1a;
+      --text:    #2d2d2d;
+      --mid:     #7a7a7a;
+      --muted:   #b0b0b0;
+      --border:  #ede8e2;
+      --accent:  #c8a882;
+      --accent-h:#b8916c;
 
       --c-dog:       #5a9a5a;
       --c-sport:     #c87830;
       --c-pilates:   #b84878;
       --c-transport: #3a6ab8;
       --c-work:      #7040b8;
-      --c-neutral:   #ababab;
+      --c-neutral:   #c0b8b0;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,27 +43,36 @@
       z-index: 10;
     }
 
-    .title {
-      font-size: 1.55rem;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      color: var(--text);
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
     }
 
-    .week-label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 3px;
-      letter-spacing: 0.1px;
+    .title { font-size: 1.55rem; font-weight: 700; letter-spacing: -0.4px; }
+
+    .week-label { font-size: 0.8rem; color: var(--muted); margin-top: 3px; }
+
+    .settings-btn {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
     }
+    .settings-btn:hover { border-color: var(--accent); }
 
     /* ── Day tabs ── */
     .day-tabs {
       display: flex;
-      gap: 0;
+      gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
-      padding: 20px 24px 0;
+      padding: 20px 0 0;
       -webkit-overflow-scrolling: touch;
     }
     .day-tabs::-webkit-scrollbar { display: none; }
@@ -72,86 +82,60 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      padding: 0 14px 18px;
+      gap: 4px;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
       cursor: pointer;
       position: relative;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.15s;
+      transition: all 0.15s;
       user-select: none;
     }
 
-    .day-tab:first-child { padding-left: 0; }
+    .day-tab:hover:not(.active) { border-color: var(--accent); }
+    .day-tab.active { background: var(--text); border-color: var(--text); color: #fff; }
+    .day-tab.today:not(.active) { border-color: var(--accent); }
+    .day-tab .dn { font-size: 0.82rem; font-weight: 600; }
+    .day-tab .dd { font-size: 0.72rem; color: var(--muted); }
+    .day-tab.active .dd { color: rgba(255,255,255,0.5); }
+    .day-tab.today:not(.active) .dn { color: var(--accent); }
 
-    .day-tab .dn {
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--muted);
-      transition: color 0.15s;
-    }
-
-    .day-tab .dd {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--muted);
-      transition: color 0.15s, background 0.15s;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-
-    .day-tab:hover .dn,
-    .day-tab:hover .dd { color: var(--text); }
-
-    .day-tab.active .dn { color: var(--text); font-weight: 600; }
-    .day-tab.active .dd {
-      background: var(--text);
-      color: #fff;
-    }
-
-    .day-tab.today:not(.active) .dd {
-      border: 1.5px solid var(--text);
-      color: var(--text);
-    }
-
-    .tl-badge {
+    .badge {
       position: absolute;
-      top: -2px;
-      right: 6px;
-      font-size: 0.5rem;
+      font-size: 0.48rem;
       font-weight: 700;
-      color: #c87830;
-      letter-spacing: 0.3px;
+      padding: 1px 4px;
+      border-radius: 6px;
+      letter-spacing: 0.2px;
+      line-height: 1.4;
     }
+    .badge-tl { top: -7px; right: -5px; color: var(--accent); background: var(--bg); border: 1px solid var(--border); }
+    .badge-lb { top: -7px; left: -5px;  color: var(--c-dog);   background: var(--bg); border: 1px solid var(--border); }
 
     /* ── Day chips ── */
     .day-chips {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
-      padding: 12px 24px 20px;
+      padding: 14px 24px 20px;
       background: var(--bg);
-      border-bottom: 1px solid var(--border);
     }
 
     .chip {
       font-size: 0.7rem;
       font-weight: 500;
       color: var(--mid);
-      padding: 3px 10px;
+      padding: 3px 11px;
       border-radius: 20px;
       border: 1px solid var(--border);
       background: var(--surface);
     }
 
     /* ── Content ── */
-    .content { padding: 24px 24px 0; }
+    .content { padding: 0 20px; }
 
-    /* ── Section ── */
-    .section { margin-bottom: 24px; }
+    .section { margin-bottom: 20px; }
 
     .section-name {
       font-size: 0.65rem;
@@ -159,57 +143,48 @@
       letter-spacing: 1.2px;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 10px;
-      padding-left: 2px;
+      margin-bottom: 8px;
+      padding-left: 4px;
     }
 
-    /* ── Events card ── */
     .events-card {
       background: var(--surface);
       border-radius: 16px;
+      border: 1px solid var(--border);
       overflow: hidden;
     }
 
-    /* ── Event row ── */
     .ev-row {
       display: flex;
       align-items: flex-start;
       gap: 14px;
-      padding: 14px 18px;
+      padding: 13px 16px;
       border-bottom: 1px solid var(--border);
       cursor: pointer;
       transition: background 0.12s;
     }
-
     .ev-row:last-child { border-bottom: none; }
-
-    .ev-row:hover { background: #faf8f5; }
-
+    .ev-row:hover { background: #faf7f3; }
     .ev-row.done { opacity: 0.4; }
-
     .ev-row.done .ev-title { text-decoration: line-through; }
 
-    /* time */
     .ev-time {
       font-size: 0.72rem;
       color: var(--muted);
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
-      min-width: 82px;
-      padding-top: 3px;
+      min-width: 80px;
+      padding-top: 2px;
       line-height: 1.5;
       flex-shrink: 0;
     }
 
-    /* colored dot */
     .ev-dot {
-      width: 7px;
-      height: 7px;
+      width: 7px; height: 7px;
       border-radius: 50%;
       flex-shrink: 0;
       margin-top: 5px;
     }
-
     .dot-dog       { background: var(--c-dog); }
     .dot-sport     { background: var(--c-sport); }
     .dot-pilates   { background: var(--c-pilates); }
@@ -217,219 +192,379 @@
     .dot-work      { background: var(--c-work); }
     .dot-neutral   { background: var(--c-neutral); }
 
-    /* text */
     .ev-body { flex: 1; min-width: 0; }
 
-    .ev-title {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.35;
-    }
+    .ev-title { font-size: 0.88rem; font-weight: 600; color: var(--text); line-height: 1.35; }
 
-    .ev-sub {
-      font-size: 0.76rem;
-      color: var(--muted);
-      margin-top: 3px;
-      line-height: 1.45;
-    }
+    .ev-sub { font-size: 0.75rem; color: var(--muted); margin-top: 3px; line-height: 1.4; }
 
-    /* check indicator */
     .ev-check {
-      width: 16px;
-      height: 16px;
+      width: 18px; height: 18px;
       border-radius: 50%;
       border: 1.5px solid var(--border);
       flex-shrink: 0;
-      margin-top: 2px;
-      transition: background 0.15s, border-color 0.15s;
+      margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+      color: transparent;
+      transition: all 0.15s;
+    }
+    .ev-row:hover .ev-check { border-color: var(--accent); }
+    .ev-row.done .ev-check { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      width: 100%;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 24px 24px 40px;
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
     }
 
-    .ev-row.done .ev-check {
-      background: var(--muted);
-      border-color: var(--muted);
+    .modal-title { font-size: 1rem; font-weight: 700; }
+
+    .modal-close {
+      background: var(--bg);
+      border: none;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--mid);
+      display: flex; align-items: center; justify-content: center;
     }
+
+    .modal-day-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-day-row:last-of-type { border-bottom: none; }
+
+    .modal-day-name { font-size: 0.9rem; font-weight: 600; min-width: 44px; }
+
+    .modal-toggles { display: flex; gap: 8px; margin-left: auto; }
+
+    .toggle-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.2px;
+    }
+    .toggle-pill:hover { border-color: var(--accent); color: var(--text); }
+    .toggle-pill.on-tt  { background: var(--text);  border-color: var(--text);  color: #fff; }
+    .toggle-pill.on-lb  { background: var(--c-dog); border-color: var(--c-dog); color: #fff; }
+
+    .modal-save {
+      margin-top: 24px;
+      width: 100%;
+      padding: 13px;
+      border-radius: 14px;
+      border: none;
+      background: var(--text);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .modal-save:hover { background: #444; }
   </style>
 </head>
 <body>
 
 <div class="header">
-  <p class="title">Mon Planning</p>
-  <p class="week-label" id="weekLabel"></p>
+  <div class="header-top">
+    <div>
+      <p class="title">Mon Planning</p>
+      <p class="week-label" id="weekLabel"></p>
+    </div>
+    <button class="settings-btn" onclick="openSettings()" title="Configurer la semaine">⚙</button>
+  </div>
   <div class="day-tabs" id="dayTabs"></div>
 </div>
 
 <div class="day-chips" id="dayChips"></div>
 <div class="content" id="content"></div>
 
+<!-- Modal configuration -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeSettings()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Ma semaine type</span>
+      <button class="modal-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div id="modalRows"></div>
+    <button class="modal-save" onclick="saveSettings()">Enregistrer</button>
+  </div>
+</div>
+
 <script>
+// ── Data ───────────────────────────────────────────────────────────────
+// vis: undefined = toujours visible
+//      'bureau'  = visible seulement si NOT télétravail
+//      'tt'      = visible seulement si télétravail
+//      'lb'      = visible seulement si Laïka boulot
+
 const WEEK = [
   {
-    name:"Lun", tl:false,
-    chips:["Bureau","Salle de sport","Pilates midi"],
+    name:"Lun", weekend:false,
     sections:[
       { name:"MATIN", events:[
-        { id:"l1",  time:"05h30 – 06h15", title:"Balade chienne",              sub:"45 min — elle est calme pour la journée",            c:"dog" },
-        { id:"l2",  time:"06h15 – 06h45", title:"Préparation + sac sport",     sub:"Préparer tenue gym la veille pour gagner du temps",   c:"neutral" },
-        { id:"l3",  time:"06h50 – 07h06", title:"À pied → gare Vouvry",        sub:"15 min · partir à 06h50",                           c:"transport" },
-        { id:"l4",  time:"07h06 – 08h12", title:"R91 → Prilly-Malley",         sub:"Voie 1 · 1h06 · arrivée 08h12",                     c:"transport" },
+        { id:"l1",  time:"05h30 – 06h15", title:"Balade Laïka",               sub:"45 min — elle est calme pour la journée",           vis:"bureau" },
+        { id:"l2",  time:"06h15 – 06h45", title:"Préparation + sac sport",    sub:"Préparer tenue gym la veille pour gagner du temps",  vis:"bureau" },
+        { id:"l_lb",time:"06h40",         title:"Laïka au bureau aujourd'hui",sub:"Prévoir eau + gamelle + couverture dans le sac",     vis:"lb" },
+        { id:"l3",  time:"06h50 – 07h06", title:"À pied → gare Vouvry",       sub:"15 min · partir à 06h50",                           vis:"bureau" },
+        { id:"l4",  time:"07h06 – 08h12", title:"R91 → Prilly-Malley",        sub:"Voie 1 · 1h06 · arrivée 08h12",                     vis:"bureau" },
+        { id:"l_tt1",time:"06h30 – 07h15",title:"Balade Laïka",               sub:"Plus tranquille — pas de train ce matin",            vis:"tt" },
+        { id:"l_tt2",time:"07h15 – 08h00",title:"Petit-déjeuner + installation",sub:"Bureau à la maison — préparer la journée",        vis:"tt" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"l5",  time:"08h12 – 12h00", title:"Travail",                     sub:"3h45 de concentration — bloc matin",                 c:"work" },
-        { id:"l6",  time:"12h00 – 12h35", title:"Cardio salle",                sub:"35 min elliptique / vélo / tapis",                   c:"sport" },
-        { id:"l7",  time:"12h35 – 13h05", title:"Pilates (séance du jour)",    sub:"Corps déjà chaud → enchaîner directement",           c:"pilates" },
-        { id:"l8",  time:"13h05 – 13h30", title:"Douche + repas express",      sub:"Lunch préparé la veille",                           c:"neutral" },
-        { id:"l9",  time:"13h30 – 17h30", title:"Travail — bloc après-midi",   sub:"Réunions + deep work",                              c:"work" },
+        { id:"l5",   time:"08h12 – 12h00", title:"Travail",                    sub:"3h45 de concentration — bloc matin",                vis:"bureau" },
+        { id:"l_tt3",time:"08h00 – 12h00",title:"Travail — deep work",        sub:"Fenêtre de concentration maximale",                  vis:"tt" },
+        { id:"l6",   time:"12h00 – 12h35", title:"Cardio salle",              sub:"35 min elliptique / vélo / tapis",                   vis:"bureau" },
+        { id:"l7",   time:"12h35 – 13h05", title:"Pilates (séance du jour)",  sub:"Corps déjà chaud → enchaîner directement",          vis:"bureau" },
+        { id:"l8",   time:"13h05 – 13h30", title:"Douche + repas express",    sub:"Lunch préparé la veille",                           vis:"bureau" },
+        { id:"l_tn1",time:"12h00 – 12h30", title:"Balade Laïka midi",         sub:"30 min — pause ressourcement",                      vis:"tt" },
+        { id:"l_tn2",time:"12h30 – 12h45", title:"Assemblage + repas Laïka", sub:"Sandwich / salade — je mange devant l'ordi",         vis:"tt" },
+        { id:"l9",  time:"13h30 – 17h30", title:"Travail — bloc après-midi",  sub:"Réunions + deep work" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"l10", time:"17h45 – 18h51", title:"R91 retour → Vouvry",         sub:"Voie 1 · arrivée 18h51",                            c:"transport" },
-        { id:"l11", time:"18h55 – 19h10", title:"À pied → maison",             sub:"15 min",                                            c:"transport" },
-        { id:"l12", time:"19h15 – 20h00", title:"Balade chienne soir",         sub:"45 min — indispensable après journée seule",         c:"dog" },
-        { id:"l13", time:"20h00 – 20h15", title:"Repas chienne",               sub:"Croquettes + eau fraîche",                          c:"dog" },
-        { id:"l14", time:"20h15 – 21h00", title:"Dîner + décompression",       sub:"Pas d'écrans si possible",                          c:"neutral" },
-        { id:"l15", time:"21h00",         title:"Prépa lendemain",             sub:"Tenue gym + lunch + sac",                           c:"neutral" },
+        { id:"l10", time:"17h45 – 18h51", title:"R91 retour → Vouvry",        sub:"Voie 1 · arrivée 18h51",                            vis:"bureau" },
+        { id:"l11", time:"18h55 – 19h10", title:"À pied → maison",            sub:"15 min",                                            vis:"bureau" },
+        { id:"l_tt4",time:"17h30",        title:"Fin de journée TT",          sub:"Fermer le bureau — déconnecter",                     vis:"tt" },
+        { id:"l12", time:"19h15 – 20h00", title:"Balade Laïka soir",          sub:"45 min — indispensable après journée seule" },
+        { id:"l13", time:"20h00 – 20h15", title:"Repas Laïka",                sub:"Croquettes + eau fraîche" },
+        { id:"l14", time:"20h15 – 21h00", title:"Dîner + décompression",      sub:"Pas d'écrans si possible" },
+        { id:"l15", time:"21h00",         title:"Prépa lendemain",            sub:"Tenue gym + lunch + sac" },
       ]}
     ]
   },
   {
-    name:"Mar", tl:false,
-    chips:["Bureau","Salle de sport"],
+    name:"Mar", weekend:false,
     sections:[
       { name:"MATIN", events:[
-        { id:"ma1", time:"05h30 – 06h15", title:"Balade chienne",              sub:"45 min — départ calme pour la journée",              c:"dog" },
-        { id:"ma2", time:"06h15 – 06h45", title:"Préparation",                 sub:"Tenue prête la veille — gain de temps",             c:"neutral" },
-        { id:"ma3", time:"06h50 – 07h06", title:"À pied → gare Vouvry",        sub:"15 min · partir à 06h50",                           c:"transport" },
-        { id:"ma4", time:"07h06 – 08h12", title:"R91 → Prilly-Malley",         sub:"Voie 1 · 1h06 · arrivée 08h12",                     c:"transport" },
+        { id:"ma1", time:"05h30 – 06h15", title:"Balade Laïka",               sub:"45 min — départ calme pour la journée",              vis:"bureau" },
+        { id:"ma2", time:"06h15 – 06h45", title:"Préparation",                sub:"Tenue prête la veille — gain de temps",              vis:"bureau" },
+        { id:"ma_lb",time:"06h40",        title:"Laïka au bureau aujourd'hui",sub:"Prévoir eau + gamelle + couverture dans le sac",     vis:"lb" },
+        { id:"ma3", time:"06h50 – 07h06", title:"À pied → gare Vouvry",       sub:"15 min · partir à 06h50",                           vis:"bureau" },
+        { id:"ma4", time:"07h06 – 08h12", title:"R91 → Prilly-Malley",        sub:"Voie 1 · 1h06 · arrivée 08h12",                     vis:"bureau" },
+        { id:"ma_tt1",time:"06h30 – 07h15",title:"Balade Laïka",              sub:"Plus tranquille — pas de train ce matin",            vis:"tt" },
+        { id:"ma_tt2",time:"07h15 – 08h00",title:"Petit-déjeuner + installation",sub:"Bureau à la maison — préparer la journée",       vis:"tt" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"ma5", time:"08h12 – 12h00", title:"Travail — bloc matin",        sub:"Deep work — emails + projets",                      c:"work" },
-        { id:"ma6", time:"12h00 – 12h50", title:"Cardio salle",                sub:"50 min — séance longue, pas de pilates",             c:"sport" },
-        { id:"ma7", time:"12h50 – 13h30", title:"Douche + repas",              sub:"Lunch préparé la veille",                           c:"neutral" },
-        { id:"ma8", time:"13h30 – 17h30", title:"Travail — après-midi",        sub:"Réunions + deep work",                              c:"work" },
+        { id:"ma5",  time:"08h12 – 12h00", title:"Travail — bloc matin",       sub:"Deep work — emails + projets",                      vis:"bureau" },
+        { id:"ma_tt3",time:"08h00 – 12h00",title:"Travail — deep work",       sub:"Fenêtre de concentration maximale",                  vis:"tt" },
+        { id:"ma6",  time:"12h00 – 12h50", title:"Cardio salle",              sub:"50 min — séance longue",                             vis:"bureau" },
+        { id:"ma7",  time:"12h50 – 13h30", title:"Douche + repas",            sub:"Lunch préparé la veille",                           vis:"bureau" },
+        { id:"ma_tn1",time:"12h00 – 12h30",title:"Balade Laïka midi",         sub:"30 min — pause ressourcement",                      vis:"tt" },
+        { id:"ma_tn2",time:"12h30 – 12h45",title:"Assemblage + repas Laïka", sub:"Sandwich / salade — je mange devant l'ordi",         vis:"tt" },
+        { id:"ma8", time:"13h30 – 17h30", title:"Travail — après-midi",       sub:"Réunions + deep work" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"ma9",  time:"17h45 – 18h51", title:"R91 retour → Vouvry",        sub:"Voie 1 · arrivée 18h51",                            c:"transport" },
-        { id:"ma10", time:"18h55 – 19h10", title:"À pied → maison",            sub:"15 min",                                            c:"transport" },
-        { id:"ma11", time:"19h15 – 20h00", title:"Balade chienne soir",        sub:"45 min",                                            c:"dog" },
-        { id:"ma12", time:"20h00 – 20h15", title:"Repas chienne",              sub:"Croquettes + eau fraîche",                          c:"dog" },
-        { id:"ma13", time:"20h15 – 21h30", title:"Soirée libre",               sub:"Temps perso — lecture, série, amis",                c:"neutral" },
+        { id:"ma9",  time:"17h45 – 18h51",title:"R91 retour → Vouvry",        sub:"Voie 1 · arrivée 18h51",                            vis:"bureau" },
+        { id:"ma10", time:"18h55 – 19h10",title:"À pied → maison",            sub:"15 min",                                            vis:"bureau" },
+        { id:"ma_tt4",time:"17h30",       title:"Fin de journée TT",          sub:"Fermer le bureau — déconnecter",                     vis:"tt" },
+        { id:"ma11", time:"19h15 – 20h00",title:"Balade Laïka soir",          sub:"45 min" },
+        { id:"ma12", time:"20h00 – 20h15",title:"Repas Laïka",                sub:"Croquettes + eau fraîche" },
+        { id:"ma13", time:"20h15 – 21h30",title:"Soirée libre",               sub:"Temps perso — lecture, série, amis" },
       ]}
     ]
   },
   {
-    name:"Mer", tl:true,
-    chips:["Télétravail","Pilates midi"],
+    name:"Mer", weekend:false,
     sections:[
       { name:"MATIN", events:[
-        { id:"me1", time:"06h30 – 07h15", title:"Balade chienne",              sub:"Plus tranquille — pas de train ce matin",            c:"dog" },
-        { id:"me2", time:"07h15 – 08h00", title:"Petit-déjeuner + installation",sub:"Bureau à la maison — préparer la journée",         c:"neutral" },
-        { id:"me3", time:"08h00 – 10h00", title:"Travail — deep work",         sub:"Fenêtre de concentration maximale",                  c:"work" },
-        { id:"me4", time:"10h00 – 10h15", title:"Pause active",                sub:"Étirements ou mini-promenade",                      c:"neutral" },
-        { id:"me5", time:"10h15 – 12h00", title:"Travail — suite matin",       sub:"Emails + réunions en ligne",                        c:"work" },
+        { id:"me1", time:"05h30 – 06h15", title:"Balade Laïka",               sub:"45 min — départ calme pour la journée",              vis:"bureau" },
+        { id:"me2", time:"06h15 – 06h45", title:"Préparation",                sub:"Tenue prête la veille — gain de temps",              vis:"bureau" },
+        { id:"me_lb",time:"06h40",        title:"Laïka au bureau aujourd'hui",sub:"Prévoir eau + gamelle + couverture dans le sac",     vis:"lb" },
+        { id:"me3", time:"06h50 – 07h06", title:"À pied → gare Vouvry",       sub:"15 min · partir à 06h50",                           vis:"bureau" },
+        { id:"me4", time:"07h06 – 08h12", title:"R91 → Prilly-Malley",        sub:"Voie 1 · 1h06 · arrivée 08h12",                     vis:"bureau" },
+        { id:"me_tt1",time:"06h30 – 07h15",title:"Balade Laïka",              sub:"Plus tranquille — pas de train ce matin",            vis:"tt" },
+        { id:"me_tt2",time:"07h15 – 08h00",title:"Petit-déjeuner + installation",sub:"Bureau à la maison — préparer la journée",       vis:"tt" },
+        { id:"me5", time:"10h00 – 10h15", title:"Pause active",               sub:"Étirements ou mini-promenade",                       vis:"tt" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"me6", time:"12h00 – 12h35", title:"Pilates (séance du jour)",    sub:"À domicile — corps frais le midi",                   c:"pilates" },
-        { id:"me7", time:"12h35 – 13h15", title:"Déjeuner",                    sub:"Cuisiner — prendre le temps",                       c:"neutral" },
-        { id:"me8", time:"13h15 – 17h30", title:"Travail — après-midi",        sub:"Réunions + suivi projets",                          c:"work" },
+        { id:"me6b", time:"08h12 – 12h00", title:"Travail — bloc matin",      sub:"Deep work — emails + projets",                      vis:"bureau" },
+        { id:"me6",  time:"08h00 – 12h00", title:"Travail — deep work",       sub:"Fenêtre de concentration maximale",                  vis:"tt" },
+        { id:"me7b", time:"12h00 – 12h35", title:"Pilates (séance du jour)",  sub:"Corps déjà chaud → enchaîner directement",          vis:"bureau" },
+        { id:"me8b", time:"12h35 – 13h15", title:"Douche + repas express",    sub:"Lunch préparé la veille",                           vis:"bureau" },
+        { id:"me_tn1",time:"12h00 – 12h30",title:"Balade Laïka midi",         sub:"30 min — pause ressourcement",                      vis:"tt" },
+        { id:"me_tn2",time:"12h30 – 12h45",title:"Assemblage + repas Laïka", sub:"Sandwich / salade — je mange devant l'ordi",         vis:"tt" },
+        { id:"me9", time:"13h15 – 17h30", title:"Travail — après-midi",       sub:"Réunions + suivi projets" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"me9",  time:"17h30 – 18h30", title:"Balade chienne longue",      sub:"1h — profiter d'être à la maison",                   c:"dog" },
-        { id:"me10", time:"18h30 – 18h45", title:"Repas chienne",              sub:"Croquettes + eau fraîche",                          c:"dog" },
-        { id:"me11", time:"19h00 – 20h00", title:"Temps libre",                sub:"Sport léger, lecture, projets perso",               c:"neutral" },
-        { id:"me12", time:"20h00",         title:"Dîner",                      sub:"Cuisiner ou commander",                             c:"neutral" },
+        { id:"me10", time:"17h45 – 18h51",title:"R91 retour → Vouvry",        sub:"Voie 1 · arrivée 18h51",                            vis:"bureau" },
+        { id:"me11", time:"18h55 – 19h10",title:"À pied → maison",            sub:"15 min",                                            vis:"bureau" },
+        { id:"me_tt3",time:"17h30",       title:"Fin de journée TT",          sub:"Fermer le bureau — déconnecter",                     vis:"tt" },
+        { id:"me12", time:"17h30 – 18h30",title:"Balade Laïka longue",        sub:"1h — profiter d'être à la maison",                   vis:"tt" },
+        { id:"me12b",time:"19h15 – 20h00",title:"Balade Laïka soir",          sub:"45 min",                                            vis:"bureau" },
+        { id:"me13", time:"18h30 – 18h45",title:"Repas Laïka",                sub:"Croquettes + eau fraîche",                           vis:"tt" },
+        { id:"me13b",time:"20h00 – 20h15",title:"Repas Laïka",                sub:"Croquettes + eau fraîche",                           vis:"bureau" },
+        { id:"me14", time:"19h00 – 20h00",title:"Temps libre",                sub:"Sport léger, lecture, projets perso",                vis:"tt" },
+        { id:"me15", time:"20h00",        title:"Dîner",                      sub:"Cuisiner ou commander" },
       ]}
     ]
   },
   {
-    name:"Jeu", tl:false,
-    chips:["Bureau","Salle de sport","Pilates midi"],
+    name:"Jeu", weekend:false,
     sections:[
       { name:"MATIN", events:[
-        { id:"j1", time:"05h30 – 06h15", title:"Balade chienne",               sub:"45 min — rituel matinal",                           c:"dog" },
-        { id:"j2", time:"06h15 – 06h45", title:"Préparation + sac sport",      sub:"Tenue prête la veille",                             c:"neutral" },
-        { id:"j3", time:"06h50 – 07h06", title:"À pied → gare Vouvry",         sub:"15 min · partir à 06h50",                           c:"transport" },
-        { id:"j4", time:"07h06 – 08h12", title:"R91 → Prilly-Malley",          sub:"Voie 1 · 1h06 · arrivée 08h12",                     c:"transport" },
+        { id:"j1",  time:"05h30 – 06h15", title:"Balade Laïka",               sub:"45 min — rituel matinal",                           vis:"bureau" },
+        { id:"j2",  time:"06h15 – 06h45", title:"Préparation + sac sport",    sub:"Tenue prête la veille",                             vis:"bureau" },
+        { id:"j_lb",time:"06h40",         title:"Laïka au bureau aujourd'hui",sub:"Prévoir eau + gamelle + couverture dans le sac",     vis:"lb" },
+        { id:"j3",  time:"06h50 – 07h06", title:"À pied → gare Vouvry",       sub:"15 min · partir à 06h50",                           vis:"bureau" },
+        { id:"j4",  time:"07h06 – 08h12", title:"R91 → Prilly-Malley",        sub:"Voie 1 · 1h06 · arrivée 08h12",                     vis:"bureau" },
+        { id:"j_tt1",time:"06h30 – 07h15",title:"Balade Laïka",               sub:"Plus tranquille — pas de train ce matin",            vis:"tt" },
+        { id:"j_tt2",time:"07h15 – 08h00",title:"Petit-déjeuner + installation",sub:"Bureau à la maison — préparer la journée",        vis:"tt" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"j5", time:"08h12 – 12h00", title:"Travail — bloc matin",         sub:"Réunions + projets",                                c:"work" },
-        { id:"j6", time:"12h00 – 12h35", title:"Cardio salle",                 sub:"35 min elliptique / vélo / tapis",                  c:"sport" },
-        { id:"j7", time:"12h35 – 13h05", title:"Pilates (séance du jour)",     sub:"Corps chaud → enchaîner directement",               c:"pilates" },
-        { id:"j8", time:"13h05 – 13h30", title:"Douche + repas express",       sub:"Lunch préparé la veille",                           c:"neutral" },
-        { id:"j9", time:"13h30 – 17h30", title:"Travail — après-midi",         sub:"Deep work + clôture de semaine",                    c:"work" },
+        { id:"j5",   time:"08h12 – 12h00", title:"Travail — bloc matin",       sub:"Réunions + projets",                                vis:"bureau" },
+        { id:"j_tt3",time:"08h00 – 12h00",title:"Travail — deep work",        sub:"Fenêtre de concentration maximale",                  vis:"tt" },
+        { id:"j6",   time:"12h00 – 12h35", title:"Cardio salle",              sub:"35 min elliptique / vélo / tapis",                   vis:"bureau" },
+        { id:"j7",   time:"12h35 – 13h05", title:"Pilates (séance du jour)",  sub:"Corps chaud → enchaîner directement",               vis:"bureau" },
+        { id:"j8",   time:"13h05 – 13h30", title:"Douche + repas express",    sub:"Lunch préparé la veille",                           vis:"bureau" },
+        { id:"j_tn1",time:"12h00 – 12h30", title:"Balade Laïka midi",         sub:"30 min — pause ressourcement",                      vis:"tt" },
+        { id:"j_tn2",time:"12h30 – 12h45", title:"Assemblage + repas Laïka", sub:"Sandwich / salade — je mange devant l'ordi",         vis:"tt" },
+        { id:"j9",  time:"13h30 – 17h30", title:"Travail — après-midi",       sub:"Deep work + clôture de semaine" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"j10", time:"17h45 – 18h51", title:"R91 retour → Vouvry",         sub:"Voie 1 · arrivée 18h51",                            c:"transport" },
-        { id:"j11", time:"18h55 – 19h10", title:"À pied → maison",             sub:"15 min",                                            c:"transport" },
-        { id:"j12", time:"19h15 – 20h00", title:"Balade chienne soir",         sub:"45 min — après longue journée",                     c:"dog" },
-        { id:"j13", time:"20h00 – 20h15", title:"Repas chienne",               sub:"Croquettes + eau fraîche",                          c:"dog" },
-        { id:"j14", time:"20h15 – 21h30", title:"Dîner + soirée libre",        sub:"Décompression avant vendredi TL",                   c:"neutral" },
+        { id:"j10", time:"17h45 – 18h51", title:"R91 retour → Vouvry",        sub:"Voie 1 · arrivée 18h51",                            vis:"bureau" },
+        { id:"j11", time:"18h55 – 19h10", title:"À pied → maison",            sub:"15 min",                                            vis:"bureau" },
+        { id:"j_tt4",time:"17h30",        title:"Fin de journée TT",          sub:"Fermer le bureau — déconnecter",                     vis:"tt" },
+        { id:"j12", time:"19h15 – 20h00", title:"Balade Laïka soir",          sub:"45 min — après longue journée" },
+        { id:"j13", time:"20h00 – 20h15", title:"Repas Laïka",                sub:"Croquettes + eau fraîche" },
+        { id:"j14", time:"20h15 – 21h30", title:"Dîner + soirée libre",       sub:"Décompression avant vendredi TT" },
       ]}
     ]
   },
   {
-    name:"Ven", tl:true,
-    chips:["Télétravail","Pilates midi"],
+    name:"Ven", weekend:false,
     sections:[
       { name:"MATIN", events:[
-        { id:"v1", time:"06h30 – 07h15", title:"Balade chienne",               sub:"Plus longue — fin de semaine",                      c:"dog" },
-        { id:"v2", time:"07h15 – 08h00", title:"Petit-déjeuner + installation",sub:"Bureau à la maison — café tranquille",              c:"neutral" },
-        { id:"v3", time:"08h00 – 12h00", title:"Travail — matin",              sub:"Finaliser la semaine + réunions bilan",             c:"work" },
+        { id:"v1",  time:"05h30 – 06h15", title:"Balade Laïka",               sub:"Plus longue — fin de semaine",                      vis:"bureau" },
+        { id:"v2",  time:"06h15 – 06h45", title:"Préparation",                sub:"Tenue prête la veille",                             vis:"bureau" },
+        { id:"v_lb",time:"06h40",         title:"Laïka au bureau aujourd'hui",sub:"Prévoir eau + gamelle + couverture dans le sac",     vis:"lb" },
+        { id:"v3",  time:"06h50 – 07h06", title:"À pied → gare Vouvry",       sub:"15 min · partir à 06h50",                           vis:"bureau" },
+        { id:"v4",  time:"07h06 – 08h12", title:"R91 → Prilly-Malley",        sub:"Voie 1 · 1h06 · arrivée 08h12",                     vis:"bureau" },
+        { id:"v_tt1",time:"06h30 – 07h15",title:"Balade Laïka",               sub:"Plus tranquille — pas de train ce matin",            vis:"tt" },
+        { id:"v_tt2",time:"07h15 – 08h00",title:"Petit-déjeuner + installation",sub:"Bureau à la maison — café tranquille",             vis:"tt" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"v4", time:"12h00 – 12h35", title:"Pilates (séance du jour)",     sub:"5e séance de la semaine si possible !",              c:"pilates" },
-        { id:"v5", time:"12h35 – 13h30", title:"Déjeuner long",                sub:"Vendredi — mérite une vraie pause",                 c:"neutral" },
-        { id:"v6", time:"13h30 – 17h00", title:"Travail — après-midi",         sub:"Clôturer, préparer semaine suivante",               c:"work" },
+        { id:"v5",   time:"08h12 – 12h00", title:"Travail — matin",            sub:"Finaliser la semaine + réunions bilan",             vis:"bureau" },
+        { id:"v_tt3",time:"08h00 – 12h00",title:"Travail — matin",            sub:"Finaliser la semaine + réunions bilan",             vis:"tt" },
+        { id:"v6",   time:"12h00 – 12h35", title:"Pilates (séance du jour)",  sub:"5e séance si possible !",                           vis:"bureau" },
+        { id:"v7",   time:"12h35 – 13h30", title:"Déjeuner long",             sub:"Vendredi — mérite une vraie pause",                  vis:"bureau" },
+        { id:"v_tn1",time:"12h00 – 12h30", title:"Balade Laïka midi",         sub:"30 min — pause ressourcement",                      vis:"tt" },
+        { id:"v_tn2",time:"12h30 – 12h45", title:"Assemblage + repas Laïka", sub:"Sandwich / salade — je mange devant l'ordi",         vis:"tt" },
+        { id:"v8",  time:"13h30 – 17h00", title:"Travail — après-midi",       sub:"Clôturer, préparer semaine suivante" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"v7", time:"17h00 – 18h00", title:"Balade chienne longue",        sub:"1h — fêter le weekend !",                           c:"dog" },
-        { id:"v8", time:"18h00 – 18h15", title:"Repas chienne",                sub:"Croquettes + eau fraîche",                          c:"dog" },
-        { id:"v9", time:"18h30 – 22h00", title:"Soirée weekend",               sub:"Amis, sortie, dîner ou soirée perso",               c:"neutral" },
+        { id:"v9",  time:"17h15 – 18h21", title:"R91 retour → Vouvry",        sub:"Voie 1 · arrivée 18h21",                            vis:"bureau" },
+        { id:"v10", time:"18h25 – 18h40", title:"À pied → maison",            sub:"15 min",                                            vis:"bureau" },
+        { id:"v_tt4",time:"17h00",        title:"Fin de journée TT",          sub:"Fermer le bureau — déconnecter",                     vis:"tt" },
+        { id:"v11", time:"17h00 – 18h00", title:"Balade Laïka longue",        sub:"1h — fêter le weekend !",                            vis:"tt" },
+        { id:"v11b",time:"18h45 – 19h30", title:"Balade Laïka longue",        sub:"1h — fêter le weekend !",                            vis:"bureau" },
+        { id:"v12", time:"18h00 – 18h15", title:"Repas Laïka",                sub:"Croquettes + eau fraîche",                           vis:"tt" },
+        { id:"v12b",time:"19h30 – 19h45", title:"Repas Laïka",                sub:"Croquettes + eau fraîche",                           vis:"bureau" },
+        { id:"v13", time:"18h30 – 22h00", title:"Soirée weekend",             sub:"Amis, sortie, dîner ou soirée perso",                vis:"tt" },
+        { id:"v13b",time:"20h00 – 22h00", title:"Soirée weekend",             sub:"Amis, sortie, dîner ou soirée perso",                vis:"bureau" },
       ]}
     ]
   },
   {
-    name:"Sam", tl:false,
-    chips:["Weekend","Chienne","Sport"],
+    name:"Sam", weekend:true,
+    chips:["Weekend","Laïka","Sport"],
     sections:[
       { name:"MATIN", events:[
-        { id:"s1", time:"07h30 – 08h30", title:"Grande balade chienne",        sub:"1h — forêt, montagne ou bords de lac",              c:"dog" },
-        { id:"s2", time:"08h30 – 09h30", title:"Petit-déjeuner du weekend",    sub:"Prendre vraiment le temps",                        c:"neutral" },
-        { id:"s3", time:"09h30 – 10h15", title:"Pilates ou yoga doux",         sub:"Séance à la maison — récupération active",          c:"pilates" },
+        { id:"s1", time:"07h30 – 08h30", title:"Grande balade Laïka",         sub:"1h — forêt, montagne ou bords de lac" },
+        { id:"s2", time:"08h30 – 09h30", title:"Petit-déjeuner du weekend",   sub:"Prendre vraiment le temps" },
+        { id:"s3", time:"09h30 – 10h15", title:"Pilates ou yoga doux",        sub:"Séance à la maison — récupération active" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"s4", time:"10h30 – 12h30", title:"Temps libre",                  sub:"Courses, amis, projets perso",                     c:"neutral" },
-        { id:"s5", time:"12h30 – 14h00", title:"Déjeuner",                     sub:"Sortir manger ou cuisiner",                        c:"neutral" },
-        { id:"s6", time:"14h00 – 17h00", title:"Activité outdoor",             sub:"Randonnée, vélo, ski ou détente",                  c:"sport" },
+        { id:"s4", time:"10h30 – 12h30", title:"Temps libre",                 sub:"Courses, amis, projets perso" },
+        { id:"s5", time:"12h30 – 14h00", title:"Déjeuner",                    sub:"Sortir manger ou cuisiner" },
+        { id:"s6", time:"14h00 – 17h00", title:"Activité outdoor",            sub:"Randonnée, vélo, ski ou détente" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"s7", time:"17h00 – 17h45", title:"Balade chienne soir",          sub:"45 min",                                           c:"dog" },
-        { id:"s8", time:"17h45 – 18h00", title:"Repas chienne",                sub:"Croquettes + eau fraîche",                         c:"dog" },
-        { id:"s9", time:"18h00 – 23h00", title:"Soirée libre",                 sub:"Profiter — aucune obligation demain matin",         c:"neutral" },
+        { id:"s7", time:"17h00 – 17h45", title:"Balade Laïka soir",           sub:"45 min" },
+        { id:"s8", time:"17h45 – 18h00", title:"Repas Laïka",                 sub:"Croquettes + eau fraîche" },
+        { id:"s9", time:"18h00 – 23h00", title:"Soirée libre",                sub:"Profiter — aucune obligation demain matin" },
       ]}
     ]
   },
   {
-    name:"Dim", tl:false,
-    chips:["Repos","Chienne"],
+    name:"Dim", weekend:true,
+    chips:["Repos","Laïka"],
     sections:[
       { name:"MATIN", events:[
-        { id:"d1", time:"08h00 – 09h00", title:"Balade chienne",               sub:"Matinée tranquille — rythme doux",                  c:"dog" },
-        { id:"d2", time:"09h00 – 10h30", title:"Petit-déjeuner + lecture",     sub:"Pas d'écrans le matin — déconnexion",               c:"neutral" },
+        { id:"d1", time:"08h00 – 09h00", title:"Balade Laïka",                sub:"Matinée tranquille — rythme doux" },
+        { id:"d2", time:"09h00 – 10h30", title:"Petit-déjeuner + lecture",    sub:"Pas d'écrans le matin — déconnexion" },
       ]},
       { name:"JOURNÉE", events:[
-        { id:"d3", time:"10h30 – 12h30", title:"Activité douce",               sub:"Yoga, marche, musée, café avec amis...",            c:"sport" },
-        { id:"d4", time:"12h30 – 14h00", title:"Déjeuner du dimanche",         sub:"Cuisiner quelque chose de bon",                    c:"neutral" },
-        { id:"d5", time:"14h00 – 16h30", title:"Temps libre",                  sub:"Sieste, projets perso, zéro obligation",            c:"neutral" },
+        { id:"d3", time:"10h30 – 12h30", title:"Activité douce",              sub:"Yoga, marche, musée, café avec amis..." },
+        { id:"d4", time:"12h30 – 14h00", title:"Déjeuner du dimanche",        sub:"Cuisiner quelque chose de bon" },
+        { id:"d5", time:"14h00 – 16h30", title:"Temps libre",                 sub:"Sieste, projets perso, zéro obligation" },
       ]},
       { name:"SOIRÉE", events:[
-        { id:"d6", time:"16h30 – 17h30", title:"Balade chienne",               sub:"1h — avant la semaine",                            c:"dog" },
-        { id:"d7", time:"17h30 – 17h45", title:"Repas chienne",                sub:"Croquettes + eau fraîche",                         c:"dog" },
-        { id:"d8", time:"18h00 – 19h00", title:"Préparation semaine",          sub:"Tenues, lunchs, planning → semaine sereine",       c:"neutral" },
-        { id:"d9", time:"19h30 – 20h30", title:"Dîner + coucher tôt",          sub:"Lever 05h30 lundi — en forme pour démarrer",       c:"neutral" },
+        { id:"d6", time:"16h30 – 17h30", title:"Balade Laïka",                sub:"1h — avant la semaine" },
+        { id:"d7", time:"17h30 – 17h45", title:"Repas Laïka",                 sub:"Croquettes + eau fraîche" },
+        { id:"d8", time:"18h00 – 19h00", title:"Préparation semaine",         sub:"Tenues, lunchs, planning → semaine sereine" },
+        { id:"d9", time:"19h30 – 20h30", title:"Dîner + coucher tôt",         sub:"Lever 05h30 lundi — en forme pour démarrer" },
       ]}
     ]
   }
 ];
+
+// ── Settings ───────────────────────────────────────────────────────────
+const DEFAULT_SETTINGS = {
+  tt: [false, false, true, false, true, false, false],
+  lb: [false, false, false, false, false, false, false]
+};
+
+function loadSettings() {
+  try { return JSON.parse(localStorage.getItem('weekSettings') || JSON.stringify(DEFAULT_SETTINGS)); }
+  catch { return JSON.parse(JSON.stringify(DEFAULT_SETTINGS)); }
+}
+
+let cfg = loadSettings();
+let draftCfg = null;
+
+function saveSettings() {
+  cfg = JSON.parse(JSON.stringify(draftCfg));
+  localStorage.setItem('weekSettings', JSON.stringify(cfg));
+  closeSettings();
+  render();
+}
 
 // ── State ──────────────────────────────────────────────────────────────
 let activeIdx = 0;
@@ -479,20 +614,42 @@ function renderWeekLabel() {
     `${mon.getDate()} ${MO[mon.getMonth()]} – ${sun.getDate()} ${MO[sun.getMonth()]} ${sun.getFullYear()}`;
 }
 
+// ── Category dot ───────────────────────────────────────────────────────
+function catDot(title, sub) {
+  const t = (title + ' ' + sub).toLowerCase();
+  if (/laïka|balade/.test(t)) return 'dog';
+  if (/pilates|yoga/.test(t)) return 'pilates';
+  if (/cardio|sport|elliptique|vélo|tapis|outdoor|randonnée/.test(t)) return 'sport';
+  if (/r91|train|gare|vouvry|prilly|à pied/.test(t)) return 'transport';
+  if (/travail|deep work/.test(t)) return 'work';
+  return 'neutral';
+}
+
+// ── Chips for a day ────────────────────────────────────────────────────
+function getChips(i) {
+  const day = WEEK[i];
+  if (day.weekend) return day.chips || [];
+  const chips = [];
+  chips.push(cfg.tt[i] ? 'Télétravail' : 'Bureau');
+  if (!cfg.tt[i]) chips.push('Salle de sport');
+  chips.push('Pilates midi');
+  if (cfg.lb[i]) chips.push('Laïka boulot');
+  return chips;
+}
+
 // ── Tabs ───────────────────────────────────────────────────────────────
 function renderTabs() {
   const today = todayIdx();
   document.getElementById('dayTabs').innerHTML = WEEK.map((d, i) => {
     const date = dayDate(i);
-    const cls = [
-      'day-tab',
-      i === activeIdx ? 'active' : '',
-      i === today ? 'today' : ''
-    ].filter(Boolean).join(' ');
+    const isTT = !d.weekend && cfg.tt[i];
+    const isLB = !d.weekend && cfg.lb[i];
+    const cls = ['day-tab', i === activeIdx ? 'active' : '', i === today ? 'today' : ''].filter(Boolean).join(' ');
     return `<button class="${cls}" onclick="select(${i})">
       <span class="dn">${d.name}</span>
       <span class="dd">${date.getDate()}</span>
-      ${d.tl ? '<span class="tl-badge">TL</span>' : ''}
+      ${isTT ? '<span class="badge badge-tl">TL</span>' : ''}
+      ${isLB ? '<span class="badge badge-lb">LB</span>' : ''}
     </button>`;
   }).join('');
 }
@@ -500,31 +657,69 @@ function renderTabs() {
 // ── Chips ──────────────────────────────────────────────────────────────
 function renderChips() {
   document.getElementById('dayChips').innerHTML =
-    WEEK[activeIdx].chips.map(c => `<span class="chip">${c}</span>`).join('');
+    getChips(activeIdx).map(c => `<span class="chip">${c}</span>`).join('');
 }
 
 // ── Content ────────────────────────────────────────────────────────────
 function renderContent() {
-  const day  = WEEK[activeIdx];
-  const done = getDone(activeIdx);
-  document.getElementById('content').innerHTML = day.sections.map(sec => `
-    <div class="section">
-      <div class="section-name">${sec.name}</div>
-      <div class="events-card">
-        ${sec.events.map(ev => `
-          <div class="ev-row ${done.has(ev.id) ? 'done' : ''}" onclick="toggle(${activeIdx},'${ev.id}')">
-            <span class="ev-time">${ev.time}</span>
-            <div class="ev-dot dot-${ev.c}"></div>
-            <div class="ev-body">
-              <div class="ev-title">${ev.title}</div>
-              <div class="ev-sub">${ev.sub}</div>
+  const day   = WEEK[activeIdx];
+  const done  = getDone(activeIdx);
+  const isTT  = !day.weekend && cfg.tt[activeIdx];
+  const isLB  = !day.weekend && cfg.lb[activeIdx];
+
+  document.getElementById('content').innerHTML = day.sections.map(sec => {
+    const visible = sec.events.filter(ev => {
+      if (ev.vis === 'bureau' && isTT)  return false;
+      if (ev.vis === 'tt'     && !isTT) return false;
+      if (ev.vis === 'lb'     && !isLB) return false;
+      return true;
+    });
+    if (!visible.length) return '';
+    return `
+      <div class="section">
+        <div class="section-name">${sec.name}</div>
+        <div class="events-card">
+          ${visible.map(ev => `
+            <div class="ev-row${done.has(ev.id) ? ' done' : ''}" onclick="toggle(${activeIdx},'${ev.id}')">
+              <span class="ev-time">${ev.time}</span>
+              <div class="ev-dot dot-${catDot(ev.title, ev.sub)}"></div>
+              <div class="ev-body">
+                <div class="ev-title">${ev.title}</div>
+                <div class="ev-sub">${ev.sub}</div>
+              </div>
+              <div class="ev-check">${done.has(ev.id) ? '✓' : ''}</div>
             </div>
-            <div class="ev-check"></div>
-          </div>
-        `).join('')}
+          `).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── Settings modal ─────────────────────────────────────────────────────
+const DAY_NAMES = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
+
+function openSettings() {
+  draftCfg = JSON.parse(JSON.stringify(cfg));
+  document.getElementById('modalRows').innerHTML = DAY_NAMES.map((name, i) => `
+    <div class="modal-day-row">
+      <span class="modal-day-name">${name}</span>
+      <div class="modal-toggles">
+        <button class="toggle-pill ${draftCfg.tt[i] ? 'on-tt' : ''}" id="toggle-tt-${i}" onclick="toggleDraft('tt',${i})">TT</button>
+        <button class="toggle-pill ${draftCfg.lb[i] ? 'on-lb' : ''}" id="toggle-lb-${i}" onclick="toggleDraft('lb',${i})">LB</button>
       </div>
     </div>
   `).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function toggleDraft(type, i) {
+  draftCfg[type][i] = !draftCfg[type][i];
+  const btn = document.getElementById(`toggle-${type}-${i}`);
+  btn.classList.toggle(`on-${type}`, draftCfg[type][i]);
+}
+
+function closeSettings() {
+  document.getElementById('modalOverlay').classList.remove('open');
 }
 
 function select(i) { activeIdx = i; render(); }
